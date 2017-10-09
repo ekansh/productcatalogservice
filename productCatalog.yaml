@@ -1,0 +1,238 @@
+swagger: "2.0"
+info:
+  description: "Product catalog API which enable CRUD operations on Product and its categories"
+  version: "1.0.0"
+  title: "Product Cataolog API"
+  termsOfService: "https://github.com/ekansh"
+  contact:
+    email: "mail.ekansh@gmail.com"
+  license:
+    name: "GNU"
+    url: "https://github.com/ekansh"
+host: "localhost:8080"
+basePath: "/v1"
+tags:
+- name: "product"
+  description: "Everything about products in product catalog"
+- name: "category"
+  description: "categories related to the product"
+- name: "media"
+  description: "media related to the product or categories"
+schemes:
+- "http"
+paths:
+  /product:
+    get:
+      tags:
+      - "product"
+      summary: "get products from the system"
+      description: "get all products in the system if there is no name or category defined. If name is defined then application will search based on the name. If category is defined application will search products based on category name. If both of them are defined then application will narrow down search of products name to specific category. Note that category name must be correct and should be the complete path of category."
+      operationId: "getAllProducts"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "query"
+        description: "ID of product to return"
+        type: "string"
+      - name: "category"
+        in: "query"
+        description: "ID of product to return"
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Product"
+  /product/{id}:
+    get:
+      tags:
+      - "product"
+      summary: "get a products from the system"
+      description: "get a product from the system"
+      operationId: "getProductById"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "ID of product to return"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Product"
+        404:
+          description: "Product not found"
+  /category:
+    get:
+      tags:
+      - "category"
+      summary: "get categories from the system"
+      description: "get categories from the system"
+      operationId: "getAllCategories"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "query"
+        description: "id of the category"
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Category"
+  /category/{path}:
+    get:
+      tags:
+      - "category"
+      summary: "get all sub categories from the system"
+      description: "get all sub product from the system"
+      operationId: "getCategories"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "path"
+        in: "path"
+        description: "All categories inside the path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Category"
+        404:
+          description: "Category not found"
+  /media:
+    get:
+      tags:
+      - "media"
+      summary: "get media from the system based on the product OR category ID"
+      description: "get media from the system based on the product OR category ID."
+      operationId: "getMedia"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "prid"
+        in: "query"
+        description: "ID of category for which you want product"
+        type: "integer"
+        format: "int64"
+      - name: "catid"
+        in: "query"
+        description: "ID of category for which you want media"
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Media"
+  /media/{id}:
+    get:
+      tags:
+      - "media"
+      summary: "get media based on the media id"
+      description: "get media based on the media id"
+      operationId: "getMediaById"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "ID of media to return"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Media"
+        404:
+          description: "media not found"
+definitions:
+    Product:
+      type: "object"
+      required:
+      - "name"
+      - "id"
+      - "category"
+      properties:
+        id:
+          type: "integer"
+          format: "int64"
+        name:
+          type: "string"
+          example: "monitor"
+        mediaUrls:
+          type: "array"
+          xml:
+            name: "mediaUrls"
+            wrapped: true
+          items:
+            type: "string"
+        category:
+          type: "array"
+          xml:
+            name: "category"
+            wrapped: true
+          items:
+            $ref: "#/definitions/Category"
+    Category:
+      type: "object"
+      required:
+      - "name"
+      - "id"
+      - "parentCategory"
+      properties:
+        id:
+          type: "integer"
+          format: "int64"
+        name:
+          type: "string"
+          example: "monitor"
+        parentCategory:
+          type: "array"
+          xml:
+            name: "parentCategory"
+            wrapped: true
+          items:
+            type: "string"
+    Media:
+      type: "object"
+      required:
+      - "name"
+      - "id"
+      - "location"
+      properties:
+        id:
+          type: "integer"
+          format: "int64"
+        name:
+          type: "string"
+          example: "monitor"
+        location:
+          type: "string"
+          example: "res/monitors"
